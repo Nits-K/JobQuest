@@ -35,3 +35,7 @@ app.listen(PORT, () => {
     connectDB();
   console.log(`server running at ${PORT}`);
 });
+
+app.get("/",(req,res)=>{
+  res.json("Ma ki chooot")
+})
