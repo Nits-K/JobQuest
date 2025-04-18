@@ -34,5 +34,4 @@ app.get("/", (req, res) => {
   res.json("API working ");
 });
 
-// 👇👇 This is the only thing Vercel needs for the handler:
 export default app;
