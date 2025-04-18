@@ -6,7 +6,7 @@ import Jobs from "./components/Jobs";
 import Browse from "./components/Browse";
 import Profile from "./components/Profile";
 import JobDescription from "./components/JobDescription";
-import Companies from "./components/admin/companies";
+import Companies from "./components/admin/Companies";
 import CreateCompany from "./components/admin/CreateCompany";
 import CompanySetup from "./components/admin/CompanySetup";
 import AdminJobs from "./components/admin/AdminJobs";
