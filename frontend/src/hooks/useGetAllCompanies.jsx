@@ -15,7 +15,6 @@ const useGetAllCompanies = () => {
             withCredentials: true,
           }
         );
-        console.log("Fetched data:", res.data);
         if (res.data.success) {
           dispatch(setCompanies(res.data.companies));
         }
