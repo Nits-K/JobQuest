@@ -21,7 +21,6 @@ const AdminJobsTable = () => {
   const navigate = useNavigate();
   useEffect(() => {
     const filterJobs =
-      allAdminJobs.length >= 0 &&
       allAdminJobs.filter((job) => {
         if (!searchJobByText) {
           return true;

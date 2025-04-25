@@ -13,9 +13,10 @@ const AdminJobs = () => {
   const [input, setInput] = useState("");
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  useGetAllAdminJobs();
   useEffect(() => {
     dispatch(setSearchJobByText(input));
-  }, [input]);
+  }, [input,dispatch]);
   return (
     <div>
       <Navbar />
