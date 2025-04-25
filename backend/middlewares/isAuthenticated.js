@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
- 
+
 const isAuthenticated = async (req, res, next) => {
   try {
     const token = req.cookies.token;
@@ -11,24 +11,21 @@ const isAuthenticated = async (req, res, next) => {
       });
     }
 
-    const decoded = jwt.verify(token, process.env.SECRET_KEY);
-
-    if (!decoded) {
+    try {
+      const decoded = jwt.verify(token, process.env.SECRET_KEY);
+      req.id = decoded.userId;
+      next();
+    } catch (error) {
       return res.status(401).json({
         message: "Invalid token",
         success: false,
       });
     }
-
-    req.id = decoded.userId;
-    next();
-
   } catch (error) {
-    console.error("Authentication error:", error.message);
-    return res.status(401).json({
-      message: "Authentication failed",
+    console.error(error);
+    return res.status(500).json({
+      message: "Server error",
       success: false,
-      error: error.message,
     });
   }
 };
