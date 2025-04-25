@@ -16,7 +16,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 const corsOptions = {
   origin: ["https://job-quest-frontend.vercel.app"],
-  methods: ["POST", "GET"],
+  methods: ["POST", "GET","PUT"],
   credentials: true
 }
 
