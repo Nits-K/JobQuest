@@ -3,46 +3,70 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import getDataUri from "../utils/datauri.js";
 import cloudinary from "../utils/cloudinary.js";
-export const register = async (req, res) => {
+
+export const register = async(req, res) => {
   try {
-    const { fullName, email, phoneNumber, password, role } = req.body;
-    if (!fullName || !email || !phoneNumber || !password || !role) {
-      return res.status(400).json({
-        message: "Something is missing",
-        success: false,
+      const { fullname, email, password, role, phoneNumber } = req.body;
+
+      console.log(fullname, email, password, role);
+
+      if (!fullname || !email || !password || !role || !phoneNumber) {
+          return res.status(400).json({
+              message: "Required All Fileds",
+              success: false,
+          });
+      }
+
+
+      let profilePhotoUrl = null;
+      const file = req.file;
+      if (file) {
+          const fileUri = getDataUri(file);
+          const cloudResponse = await cloudinary.uploader.upload(fileUri.content);
+          profilePhotoUrl = cloudResponse.secure_url;
+      }
+
+      const existingUser = await User.findOne({ email });
+      if (existingUser) {
+          return res.status(400).json({
+              message: 'User already exists with this email.',
+              success: false,
+          });
+      }
+
+      const hashedPassword = await bcrypt.hash(password, 10);
+
+      const newUser = await User.create({
+          fullname,
+          email,
+
+          password: hashedPassword,
+          role,
+          phoneNumber,
+          profile: {
+              profilePhoto: profilePhotoUrl,
+          },
       });
-    }
-    const file = req.file;
-    const fileUri = getDataUri(file);
-    const cloudResponse = await cloudinary.uploader.upload(fileUri.content);
-    const user = await User.findOne({ email });
-    if (user) {
-      return res.status(400).json({
-        message: "User already exists with this email",
-        success: false,
+
+      return res.status(201).json({
+          message: "Account created successfully.",
+          success: true,
+          user: {
+              fullname: newUser.fullname,
+              email: newUser.email,
+              phoneNumber: newUser.phoneNumber,
+              role: newUser.role,
+              profilePhoto: newUser.profile.profilePhoto,
+          },
       });
-    }
-    const hashedPassword = await bcrypt.hash(password, 10);
-    await User.create({
-      fullName,
-      email,
-      phoneNumber,
-      password: hashedPassword,
-      role,
-      profile: {
-        profilePhoto: cloudResponse.secure_url,
-      },
-    });
-    return res.status(201).json({
-      message: "Account created Successfully",
-      success: true,
-    });
   } catch (error) {
-    console.log("Register Error:", error);
-    return res.status(500).json({
-      message: "Server error",
-      success: false,
-    });
+      console.error(error);
+      return res.status(500).json({
+          message: "Server error",
+          success: false,
+          error: error.message,
+          false: error
+      });
   }
 };
 export const login = async (req, res) => {
@@ -81,20 +105,12 @@ export const login = async (req, res) => {
       expiresIn: "1d",
     });
 
-    user = {
-      _id: user._id,
-      fullName: user.fullName,
-      email: user.email,
-      phoneNumber: user.phoneNumber,
-      role: user.role,
-      profile: user.profile,
-    };
     return res
       .status(200)
       .cookie("token", token, {
-        maxAge: 1 * 24 * 60 * 60 * 1000,
-        httpOnly: true,
-        sameSite: "strict",
+        maxAge: 24 * 60 * 60 * 1000,
+        sameSite: "none",
+        secure:true,
       })
       .json({
         message: `Welcome back ${user.fullName}`,
