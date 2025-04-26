@@ -12,21 +12,16 @@ const Applicants = () => {
   const params = useParams();
   const dispatch = useDispatch();
   const { applicants } = useSelector((store) => store.application);
-
+  
   useEffect(() => {
     const fetchAllApplicants = async () => {
       try {
-        const token = localStorage.getItem("authToken"); // or wherever you stored the token
-
         const res = await axios.get(
           `${APPLICATION_API_END_POINT}/${params.id}/applicants`,
           {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+            withCredentials: true,
           }
         );
-
         dispatch(setAllApplicants(res.data.job));
       } catch (error) {
         console.log(error);

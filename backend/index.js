@@ -12,6 +12,8 @@ dotenv.config();
 
 const app = express();
 
+
+
 const corsOptions = {
   origin: "https://job-quest-frontend.vercel.app",
   credentials: true,

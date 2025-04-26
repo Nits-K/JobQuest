@@ -52,19 +52,14 @@ const UpdateProfileDialog = ({ open, setOpen }) => {
     }
     try {
       setLoading(true);
-      
-      // Get the JWT token from localStorage or cookies
-      const token = localStorage.getItem("token"); // or cookies if stored there
-      
       const res = await axios.post(
         `${USER_API_END_POINT}/profile/update`,
         formData,
         {
           headers: {
             "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${token}`, // Attach the token in the request header
           },
-          withCredentials: true, // Make sure cookies are included if necessary
+          withCredentials: true,
         }
       );
       if (res.data.success) {

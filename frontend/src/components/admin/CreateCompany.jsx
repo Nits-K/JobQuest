@@ -9,24 +9,18 @@ import { COMPANY_API_END_POINT } from "../../utils/constant";
 import { toast } from "sonner";
 import { useDispatch } from "react-redux";
 import { setSingleCompany } from "../../redux/companySlice";
-
 const CreateCompany = () => {
   const navigate = useNavigate();
-  const [companyName, setCompanyName] = useState("");
-  const dispatch = useDispatch();
-
+  const [companyName, setCompanyName] = useState();
+  const dispatch=useDispatch();
   const registerNewCompany = async () => {
     try {
-      // Get token from localStorage
-      const token = localStorage.getItem("authToken");
-
       const res = await axios.post(
         `${COMPANY_API_END_POINT}/register`,
         { companyName },
         {
           headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`, // Add JWT token to the header
           },
           withCredentials: true,
         }
@@ -39,11 +33,8 @@ const CreateCompany = () => {
       }
     } catch (error) {
       console.log(error);
-      // Enhanced error handling
-      toast.error(error.response?.data?.message || "Something went wrong");
     }
   };
-
   return (
     <div>
       <Navbar />
@@ -51,7 +42,7 @@ const CreateCompany = () => {
         <div className="my-10">
           <h1 className="font-bold text-2xl">Your Company Name</h1>
           <p className="text-gray-500">
-            What would you like to give your company name? You can change this
+            What would you like to give your company name? you can change this
             later.
           </p>
         </div>
@@ -59,8 +50,7 @@ const CreateCompany = () => {
         <Input
           type="text"
           className="my-2"
-          placeholder="JobQuest, FaceBook, etc."
-          value={companyName}
+          placeholder="JobQuest,FaceBook etc."
           onChange={(e) => setCompanyName(e.target.value)}
         />
         <div className="flex items-center gap-2 my-10">

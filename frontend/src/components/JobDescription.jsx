@@ -11,7 +11,7 @@ import { toast } from "sonner";
 const JobDescription = () => {
   const { singleJob } = useSelector((store) => store.job);
   const { user } = useSelector((store) => store.auth);
-
+  
   // Check if the user is already applied initially
   const isIntiallyApplied =
     singleJob?.applications?.some(
@@ -29,16 +29,9 @@ const JobDescription = () => {
   // Handler for applying for the job
   const applyJobHandler = async () => {
     try {
-      const token = localStorage.getItem("jwtToken"); // Retrieve JWT token from localStorage or cookie
-
       const res = await axios.get(
         `${APPLICATION_API_END_POINT}/apply/${jobId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`, // Include the token in request header
-          },
-          withCredentials: true,
-        }
+        { withCredentials: true }
       );
 
       if (res.data.success) {
@@ -60,12 +53,7 @@ const JobDescription = () => {
   useEffect(() => {
     const fetchSingleJob = async () => {
       try {
-        const token = localStorage.getItem("jwtToken"); // Retrieve JWT token from localStorage or cookie
-
         const res = await axios.get(`${JOB_API_END_POINT}/get/${jobId}`, {
-          headers: {
-            Authorization: `Bearer ${token}`, // Include the token in request header
-          },
           withCredentials: true,
         });
 

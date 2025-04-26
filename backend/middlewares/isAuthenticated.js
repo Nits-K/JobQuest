@@ -1,20 +1,20 @@
 import jwt from "jsonwebtoken";
-import dotenv from "dotenv";
+import dotenv  from "dotenv";
 dotenv.config();
 
-const isAuthenticated = async (req, res, next) => {
+const isAuthenticated = async(req, res, next) => {
     try {
-        const authHeader = req.headers.authorization;
+        console.log(req);
+        
+        const token = req.cookies.token;
+        console.log("Token in request cookies:", token);  // Debugging line
 
-        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        if (!token) {
             return res.status(401).json({
-                message: "Authorization token missing or invalid",
+                message: "Please login first then proceed",
                 success: false,
             });
         }
-
-        const token = authHeader.split(' ')[1]; // Extract the token part
-        console.log("Token from Authorization header:", token);
 
         try {
             const decoded = jwt.verify(token, process.env.SECRET_KEY);

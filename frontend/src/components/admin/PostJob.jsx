@@ -52,28 +52,12 @@ const PostJob = () => {
 
     try {
       setLoading(true);
-      
-      // Get JWT token from localStorage (or wherever it's stored)
-      const token = localStorage.getItem("token");
-      
-      // If token is not available, redirect to login page (optional)
-      if (!token) {
-        toast.error("You must be logged in to post a job");
-        navigate("/login");
-        return;
-      }
-
-      const res = await axios.post(
-        `${JOB_API_END_POINT}/post`, 
-        input,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`, // Add JWT token to the headers
-          },
-          withCredentials: true,
-        }
-      );
+      const res = await axios.post(`${JOB_API_END_POINT}/post`, input, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+      });
 
       if (res.data.success) {
         toast.success(res.data.message);

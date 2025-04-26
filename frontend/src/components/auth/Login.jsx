@@ -36,19 +36,11 @@ const Login = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        withCredentials: true, // Ensure cookies are handled (for sessions, if used)
+        withCredentials: true,
       });
 
       if (res.data.success) {
-        // Store the JWT token in localStorage
-        localStorage.setItem("token", res.data.token);
-        
-        // Dispatch user data to Redux store
-        dispatch(setUser(res.data.user)); 
-        
-        // Optionally, save user role in localStorage for easy access
-        localStorage.setItem("role", res.data.user.role);
-        
+        dispatch(setUser(res.data.user)); // Set user info in Redux
         navigate("/"); // Redirect to homepage after successful login
         toast.success(res.data.message); // Display success message
       }
@@ -60,7 +52,7 @@ const Login = () => {
   };
 
   useEffect(() => {
-    if (user || localStorage.getItem("token")) {
+    if (user) {
       navigate("/"); // If already logged in, redirect to homepage
     }
   }, [user, navigate]);
