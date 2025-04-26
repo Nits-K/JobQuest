@@ -10,7 +10,6 @@ import { toast } from "sonner";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { Loader2 } from "lucide-react";
-import store from "../../redux/store";
 import { setLoading } from "../../redux/authSlice";
 
 const Signup = () => {
@@ -22,7 +21,7 @@ const Signup = () => {
     role: "",
     file: "",
   });
-  const { loading,user} = useSelector((store) => store.auth);
+  const { loading, user } = useSelector((store) => store.auth);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -52,6 +51,12 @@ const Signup = () => {
         withCredentials: true,
       });
       if (res.data.success) {
+        // Store JWT token in localStorage (or cookies if you prefer)
+        localStorage.setItem("token", res.data.token);
+
+        // Optionally store user data as well (if required)
+        localStorage.setItem("user", JSON.stringify(res.data.user));
+
         navigate("/login");
         toast.success(res.data.message);
       }
@@ -62,11 +67,12 @@ const Signup = () => {
       dispatch(setLoading(false));
     }
   };
+
   useEffect(() => {
-      if (user) {
-        navigate("/");
-      }
-    }, []);
+    if (user || localStorage.getItem("token")) {
+      navigate("/"); // If already logged in, redirect to homepage
+    }
+  }, [user, navigate]);
 
   return (
     <div>

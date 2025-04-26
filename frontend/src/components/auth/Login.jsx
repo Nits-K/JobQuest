@@ -12,16 +12,18 @@ import { useDispatch, useSelector } from "react-redux";
 import { setLoading } from "../../redux/authSlice";
 import { setUser } from "../../redux/authSlice";
 import { Loader2 } from "lucide-react";
-import store from "../../redux/store";
+
 const Login = () => {
   const [input, setInput] = useState({
     email: "",
     password: "",
     role: "",
   });
+  
   const { loading, user } = useSelector((store) => store.auth);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
   const changeEventHandler = (e) => {
     setInput({ ...input, [e.target.name]: e.target.value });
   };
@@ -34,27 +36,34 @@ const Login = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        withCredentials: true,
+        withCredentials: true, // Ensure cookies are handled (for sessions, if used)
       });
 
       if (res.data.success) {
-        dispatch(setUser(res.data.user));
-        navigate("/");
-        toast.success(res.data.message);
+        // Store the JWT token in localStorage
+        localStorage.setItem("token", res.data.token);
+        
+        // Dispatch user data to Redux store
+        dispatch(setUser(res.data.user)); 
+        
+        // Optionally, save user role in localStorage for easy access
+        localStorage.setItem("role", res.data.user.role);
+        
+        navigate("/"); // Redirect to homepage after successful login
+        toast.success(res.data.message); // Display success message
       }
     } catch (error) {
-      console.log(error);
-      toast.error(error.response?.data?.message || "Login failed");
+      toast.error(error.response?.data?.message || "Login failed"); // Display error message
     } finally {
-      dispatch(setLoading(false));
+      dispatch(setLoading(false)); // Stop loading indicator
     }
   };
 
   useEffect(() => {
-    if (user) {
-      navigate("/");
+    if (user || localStorage.getItem("token")) {
+      navigate("/"); // If already logged in, redirect to homepage
     }
-  }, []);
+  }, [user, navigate]);
 
   return (
     <div>
@@ -114,6 +123,7 @@ const Login = () => {
               </div>
             </RadioGroup>
           </div>
+          
           {loading ? (
             <Button className="w-full my-4">
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />

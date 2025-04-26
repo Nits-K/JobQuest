@@ -6,14 +6,24 @@ import { setAllJobs } from "../redux/jobSlice";
 
 const useGetAllJobs = () => {
   const dispatch = useDispatch();
-  const {searchedQuery}=useSelector(store=>store.job)
+  const { searchedQuery } = useSelector((store) => store.job);
+
   useEffect(() => {
     const fetchAllJobs = async () => {
       try {
+        // Retrieve the JWT token from localStorage (or cookies if you're using them)
+        const token = localStorage.getItem("token"); // or from cookies
+        
         const queryParam = searchedQuery ? `?keyword=${searchedQuery}` : '';
+        
+        // Make the request with the Authorization header
         const res = await axios.get(`${JOB_API_END_POINT}/get${queryParam}`, {
-          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`, // Attach the JWT token
+          },
+          withCredentials: true, // Ensure cookies are sent if required
         });
+
         if (res.data.success) {
           dispatch(setAllJobs(res.data.jobs));
         }
@@ -21,8 +31,9 @@ const useGetAllJobs = () => {
         console.log(error);
       }
     };
+
     fetchAllJobs();
-  }, [searchedQuery,dispatch]);
+  }, [searchedQuery, dispatch]);
 };
 
 export default useGetAllJobs;

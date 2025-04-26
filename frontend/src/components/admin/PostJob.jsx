@@ -34,6 +34,7 @@ const PostJob = () => {
   const navigate = useNavigate();
 
   const { companies } = useSelector((store) => store.company);
+
   const changeEventHandler = (e) => {
     setInput({ ...input, [e.target.name]: e.target.value });
   };
@@ -47,20 +48,40 @@ const PostJob = () => {
 
   const submitHandler = async (e) => {
     e.preventDefault();
+    if (loading) return;  // Prevent multiple submissions
+
     try {
       setLoading(true);
-      const res = await axios.post(`${JOB_API_END_POINT}/post`, input, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        withCredentials: true,
-      });
+      
+      // Get JWT token from localStorage (or wherever it's stored)
+      const token = localStorage.getItem("token");
+      
+      // If token is not available, redirect to login page (optional)
+      if (!token) {
+        toast.error("You must be logged in to post a job");
+        navigate("/login");
+        return;
+      }
+
+      const res = await axios.post(
+        `${JOB_API_END_POINT}/post`, 
+        input,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, // Add JWT token to the headers
+          },
+          withCredentials: true,
+        }
+      );
+
       if (res.data.success) {
         toast.success(res.data.message);
         navigate("/admin/jobs");
       }
     } catch (error) {
-      toast.error(error.response.data.message);
+      console.error(error);
+      toast.error(error.response?.data?.message || "Something went wrong");
     } finally {
       setLoading(false);
     }
@@ -83,6 +104,7 @@ const PostJob = () => {
                 value={input.title}
                 onChange={changeEventHandler}
                 className="focus-visible:ring-offset-0 focus-visible:ring-0 my-1"
+                required
               />
             </div>
             <div>
@@ -93,6 +115,7 @@ const PostJob = () => {
                 value={input.description}
                 onChange={changeEventHandler}
                 className="focus-visible:ring-offset-0 focus-visible:ring-0 my-1"
+                required
               />
             </div>
             <div>
@@ -103,6 +126,7 @@ const PostJob = () => {
                 value={input.requirements}
                 onChange={changeEventHandler}
                 className="focus-visible:ring-offset-0 focus-visible:ring-0 my-1"
+                required
               />
             </div>
             <div>
@@ -113,6 +137,7 @@ const PostJob = () => {
                 value={input.salary}
                 onChange={changeEventHandler}
                 className="focus-visible:ring-offset-0 focus-visible:ring-0 my-1"
+                required
               />
             </div>
             <div>
@@ -123,6 +148,7 @@ const PostJob = () => {
                 value={input.location}
                 onChange={changeEventHandler}
                 className="focus-visible:ring-offset-0 focus-visible:ring-0 my-1"
+                required
               />
             </div>
             <div>
@@ -133,6 +159,7 @@ const PostJob = () => {
                 value={input.jobType}
                 onChange={changeEventHandler}
                 className="focus-visible:ring-offset-0 focus-visible:ring-0 my-1"
+                required
               />
             </div>
             <div>
@@ -143,18 +170,21 @@ const PostJob = () => {
                 value={input.experience}
                 onChange={changeEventHandler}
                 className="focus-visible:ring-offset-0 focus-visible:ring-0 my-1"
+                required
               />
             </div>
             <div>
-              <Label>No of Postions</Label>
+              <Label>No of Positions</Label>
               <Input
                 type="number"
                 name="position"
                 value={input.position}
                 onChange={changeEventHandler}
                 className="focus-visible:ring-offset-0 focus-visible:ring-0 my-1"
+                required
               />
             </div>
+
             {companies.length > 0 && (
               <Select onValueChange={selectChangeHandler}>
                 <SelectTrigger className="w-[180px]">
@@ -175,19 +205,20 @@ const PostJob = () => {
               </Select>
             )}
           </div>
+
           {loading ? (
-            <Button className="w-full my-4">
-              {" "}
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Please wait{" "}
+            <Button className="w-full my-4" disabled>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Please wait...
             </Button>
           ) : (
             <Button type="submit" className="w-full my-4">
               Post New Job
             </Button>
           )}
+
           {companies.length === 0 && (
             <p className="text-xs text-red-600 font-bold text-center my-3">
-              *Please register a company first, before posting a jobs
+              *Please register a company first, before posting a job.
             </p>
           )}
         </form>

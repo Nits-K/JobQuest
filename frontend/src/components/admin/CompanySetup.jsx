@@ -29,10 +29,12 @@ const CompanySetup = () => {
   const changeEventHandler = (e) => {
     setInput({ ...input, [e.target.name]: e.target.value });
   };
+
   const changeFileHandler = (e) => {
     const file = e.target.files?.[0];
     setInput({ ...input, file });
   };
+
   const submitHandler = async (e) => {
     e.preventDefault();
     const formData = new FormData();
@@ -43,25 +45,33 @@ const CompanySetup = () => {
     if (input.file) {
       formData.append("file", input.file);
     }
+
     try {
       setLoading(true);
+
+      // Get token from localStorage
+      const token = localStorage.getItem("authToken");
+
+      // Send the request with the token in the Authorization header
       const res = await axios.put(
         `${COMPANY_API_END_POINT}/update/${params.id}`,
         formData,
         {
           headers: {
             "Content-Type": "multipart/form-data",
+            "Authorization": `Bearer ${token}`, // Authorization header with JWT
           },
-          withCredentials: true,
         }
       );
+
       if (res.data.success) {
         toast.success(res.data.message);
         navigate("/admin/companies");
       }
     } catch (error) {
       console.log(error);
-      toast.error(error.res.data.message);
+      // Improved error handling with fallback message
+      toast.error(error.response?.data?.message || "Something went wrong");
     } finally {
       setLoading(false);
     }

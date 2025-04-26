@@ -24,29 +24,38 @@ const AdminJobsTable = () => {
   const [filterJobs, setFilterJobs] = useState(allAdminJobs);
   const navigate = useNavigate();
 
-  const handleDeleteJob = async (jobId) => {
-    try {
-      if (!jobId) {
-        toast.error("Job ID is missing");
-        return;
-      }
-      axios.defaults.withCredentials = true;
-      const response = await axios.post(`${JOB_API_END_POINT}/delete`, {
-        jobId,
-      });
+//   const handleDeleteJob = async (jobId) => {
+//     try {
+//       if (!jobId) {
+//         toast.error("Job ID is missing");
+//         return;
+//       }
+//       const token = localStorage.getItem('authToken'); // Assuming you stored JWT at login
 
-      // Update Redux state
-      dispatch(setAllJobs(response.data.remainingJobs));
+// const response = await axios.post(
+//   `${JOB_API_END_POINT}/delete`,
+//   { jobId },
+//   {
+//     headers: {
+//       Authorization: `Bearer ${token}`,
+//       'Content-Type': 'application/json',
+//     },
+//   }
+// );
 
-      // Trigger re-filtering
-      setFilterJobs(response.data.remainingJobs);
 
-      toast.success(response.data.message);
-    } catch (error) {
-      console.error("Error deleting job:", error);
-      toast.error(error.response?.data?.message || "Error deleting the job");
-    }
-  };
+//       // Update Redux state
+//       dispatch(setAllJobs(response.data.remainingJobs));
+
+//       // Trigger re-filtering
+//       setFilterJobs(response.data.remainingJobs);
+
+//       toast.success(response.data.message);
+//     } catch (error) {
+//       console.error("Error deleting job:", error);
+//       toast.error(error.response?.data?.message || "Error deleting the job");
+//     }
+//   };
 
   useEffect(() => {
     setFilterJobs(
