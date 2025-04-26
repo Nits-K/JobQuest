@@ -6,7 +6,7 @@ const isAuthenticated = async(req, res, next) => {
 
         if (!token) {
             return res.status(401).json({
-                message: "Please login frist then proceed",
+                message: "Please login first then proceed",
                 success: false,
             });
         }
