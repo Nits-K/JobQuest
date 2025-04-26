@@ -4,69 +4,67 @@ import bcrypt from "bcryptjs";
 import getDataUri from "../utils/datauri.js";
 import cloudinary from "../utils/cloudinary.js";
 
-export const register = async(req, res) => {
+export const register = async (req, res) => {
   try {
-      const { fullname, email, password, role, phoneNumber } = req.body;
+    const { fullName, email, password, role, phoneNumber } = req.body;
 
-      console.log(fullname, email, password, role);
+    console.log(fullName, email, password, role);
 
-      if (!fullname || !email || !password || !role || !phoneNumber) {
-          return res.status(400).json({
-              message: "Required All Fields",
-              success: false,
-          });
-      }
-
-
-      let profilePhotoUrl = null;
-      const file = req.file;
-      if (file) {
-          const fileUri = getDataUri(file);
-          const cloudResponse = await cloudinary.uploader.upload(fileUri.content);
-          profilePhotoUrl = cloudResponse.secure_url;
-      }
-
-      const existingUser = await User.findOne({ email });
-      if (existingUser) {
-          return res.status(400).json({
-              message: 'User already exists with this email.',
-              success: false,
-          });
-      }
-
-      const hashedPassword = await bcrypt.hash(password, 10);
-
-      const newUser = await User.create({
-          fullname,
-          email,
-
-          password: hashedPassword,
-          role,
-          phoneNumber,
-          profile: {
-              profilePhoto: profilePhotoUrl,
-          },
+    if (!fullName || !email || !password || !role || !phoneNumber) {
+      return res.status(400).json({
+        message: "Required All Fields",
+        success: false,
       });
+    }
 
-      return res.status(201).json({
-          message: "Account created successfully.",
-          success: true,
-          user: {
-              fullname: newUser.fullname,
-              email: newUser.email,
-              phoneNumber: newUser.phoneNumber,
-              role: newUser.role,
-              profilePhoto: newUser.profile.profilePhoto,
-          },
+    let profilePhotoUrl = null;
+    const file = req.file;
+    if (file) {
+      const fileUri = getDataUri(file);
+      const cloudResponse = await cloudinary.uploader.upload(fileUri.content);
+      profilePhotoUrl = cloudResponse.secure_url;
+    }
+
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({
+        message: "User already exists with this email.",
+        success: false,
       });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const newUser = await User.create({
+      fullName,
+      email,
+
+      password: hashedPassword,
+      role,
+      phoneNumber,
+      profile: {
+        profilePhoto: profilePhotoUrl,
+      },
+    });
+
+    return res.status(201).json({
+      message: "Account created successfully.",
+      success: true,
+      user: {
+        fullName: newUser.fullName,
+        email: newUser.email,
+        phoneNumber: newUser.phoneNumber,
+        role: newUser.role,
+        profilePhoto: newUser.profile.profilePhoto,
+      },
+    });
   } catch (error) {
-      console.error(error);
-      return res.status(500).json({
-          message: "Server error",
-          success: false,
-          error: error.message,
-          false: error
-      });
+    console.error(error);
+    return res.status(500).json({
+      message: "Server error",
+      success: false,
+      error: error.message,
+    });
   }
 };
 export const login = async (req, res) => {
@@ -110,7 +108,8 @@ export const login = async (req, res) => {
       .cookie("token", token, {
         maxAge: 24 * 60 * 60 * 1000,
         sameSite: "none",
-        secure:true,
+        secure: true,
+        httpOnly: true,
       })
       .json({
         message: `Welcome back ${user.fullName}`,
@@ -128,10 +127,13 @@ export const login = async (req, res) => {
 
 export const logout = async (req, res) => {
   try {
-    return res.status(200).cookie("token", "", { maxAge: 0 }).json({
-      message: "Logged out successfully",
-      success: true,
-    });
+    return res
+      .status(200)
+      .cookie("token", "", { maxAge: 0, sameSite: "none", secure: true })
+      .json({
+        message: "Logged out successfully",
+        success: true,
+      });
   } catch (error) {
     console.log(error);
   }
@@ -140,10 +142,14 @@ export const updateProfile = async (req, res) => {
   try {
     const { fullName, email, phoneNumber, bio, skills } = req.body;
     const file = req.file;
-    const fileUri = getDataUri(file);
-    const cloudResponse = await cloudinary.uploader.upload(fileUri.content, {
-      resource_type: "auto",
-    });
+    let cloudResponse;
+    if (file) {
+      const fileUri = getDataUri(file);
+      cloudResponse = await cloudinary.uploader.upload(fileUri.content, {
+        resource_type: "auto",
+      });
+    }
+
     let skillsArray = [];
     if (skills) {
       skillsArray = skills.split(",").map((s) => s.trim());
