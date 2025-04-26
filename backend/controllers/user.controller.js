@@ -97,9 +97,9 @@ export const login = async (req, res) => {
       });
     }
     const tokenData = {
-      userId: user._id,
+      userId: user._id
     };
-    const token = await jwt.sign(tokenData, process.env.SECRET_KEY, {
+    const token = jwt.sign(tokenData, process.env.SECRET_KEY, {
       expiresIn: "1d",
     });
 
@@ -109,7 +109,7 @@ export const login = async (req, res) => {
         maxAge: 24 * 60 * 60 * 1000,
         sameSite: "none",
         secure: true,
-        httpOnly: true,
+        // httpOnly: true,
       })
       .json({
         message: `Welcome back ${user.fullName}`,
@@ -142,7 +142,7 @@ export const updateProfile = async (req, res) => {
   try {
     const { fullName, email, phoneNumber, bio, skills } = req.body;
     const file = req.file;
-    let cloudResponse;
+    let cloudResponse=null;
     if (file) {
       const fileUri = getDataUri(file);
       cloudResponse = await cloudinary.uploader.upload(fileUri.content, {

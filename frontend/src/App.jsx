@@ -46,51 +46,51 @@ const appRouter = createBrowserRouter([
   // admin side pages
   {
     path: "/admin/companies",
-    element: 
+    element: (
       <ProtectedRoute>
         <Companies />
       </ProtectedRoute>
-    
+    ),
   },
   {
     path: "/admin/companies/create",
-    element: 
+    element: (
       <ProtectedRoute>
         <CreateCompany />
       </ProtectedRoute>
-    
+    ),
   },
   {
     path: "/admin/companies/:id",
-    element: 
+    element: (
       <ProtectedRoute>
         <CompanySetup />
       </ProtectedRoute>
-    
+    ),
   },
   {
     path: "/admin/jobs",
-    element: 
+    element: (
       <ProtectedRoute>
         <AdminJobs />
       </ProtectedRoute>
-    
+    ),
   },
   {
     path: "/admin/jobs/create",
-    element: 
+    element: (
       <ProtectedRoute>
         <PostJob />
       </ProtectedRoute>
-    
+    ),
   },
   {
     path: "/admin/jobs/:id/applicants",
-    element: 
+    element: (
       <ProtectedRoute>
         <Applicants />
       </ProtectedRoute>
-    
+    ),
   },
 ]);
 function App() {
