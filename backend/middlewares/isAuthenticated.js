@@ -4,6 +4,8 @@ dotenv.config();
 
 const isAuthenticated = async(req, res, next) => {
     try {
+        console.log(req);
+        
         const token = req.cookies.token;
         console.log("Token in request cookies:", token);  // Debugging line
 
