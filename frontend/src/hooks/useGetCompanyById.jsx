@@ -19,7 +19,6 @@ const useGetCompanyById = (companyId) => {
           dispatch(setSingleCompany(res.data.company));
         }
       } catch (error) {
-        console.log(error.response.data);
       }
     };
     fetchSingleCompany();

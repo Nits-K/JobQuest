@@ -44,7 +44,7 @@ const JobDescription = () => {
         toast.success(res.data.message);
       }
     } catch (error) {
-      console.log(error.response.data);
+      console.log(error);
       toast.error(error.response?.data?.message || "An error occurred while applying.");
     }
   };

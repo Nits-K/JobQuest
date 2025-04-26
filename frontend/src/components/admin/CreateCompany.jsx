@@ -32,7 +32,7 @@ const CreateCompany = () => {
         navigate(`/admin/companies/${companyId}`);
       }
     } catch (error) {
-      console.log(error.res.data);
+      console.log(error);
     }
   };
   return (
