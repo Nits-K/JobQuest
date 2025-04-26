@@ -1,8 +1,8 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
-import authSlice from "./authSlice.js";
-import jobSlice from "./jobSlice.js";
-import companySlice from "./companySlice.js"
-import applicationSlice from "./applicationSlice.js"
+import authSlice from "./authSlice";
+import jobSlice from "./jobSlice";
+import companySlice from "./companySlice";
+import applicationSlice from "./applicationSlice";
 import {
   persistStore,
   persistReducer,
@@ -20,13 +20,21 @@ const persistConfig = {
   version: 1,
   storage,
 };
-const rootReducer=combineReducers({
-    auth:authSlice,
-    job:jobSlice,
-    company:companySlice,
-    application:applicationSlice
 
-})
+const appReducer = combineReducers({
+  auth: authSlice,
+  job: jobSlice,
+  company: companySlice,
+  application: applicationSlice,
+});
+
+const rootReducer = (state, action) => {
+  if (action.type === "LOGOUT") {
+    // Clear all redux state
+    state = undefined;
+  }
+  return appReducer(state, action);
+};
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
@@ -39,4 +47,7 @@ const store = configureStore({
       },
     }),
 });
+
+export const persistor = persistStore(store);
+
 export default store;
