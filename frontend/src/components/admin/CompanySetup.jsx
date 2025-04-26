@@ -60,7 +60,7 @@ const CompanySetup = () => {
         navigate("/admin/companies");
       }
     } catch (error) {
-      console.log(error);
+      console.log(error.res.data);
       toast.error(error.res.data.message);
     } finally {
       setLoading(false);
